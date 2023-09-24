@@ -1,21 +1,14 @@
 #include "main.h"
 
-
-/////
-// For instalattion, upgrading, documentations and tutorials, check out website!
-// https://ez-robotics.github.io/EZ-Template/
-/////
-
-
 // Chassis constructor
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {2, 5}
+  {4,5,6}
 
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  ,{-3, -4}
+  ,{1,2,3}
 
   // IMU Port
   ,21
@@ -26,13 +19,13 @@ Drive chassis (
 
   // Cartridge RPM
   //   (or tick per rotation if using tracking wheels)
-  ,200
+  ,600
 
   // External Gear Ratio (MUST BE DECIMAL)
   //    (or gear ratio of tracking wheel)
   // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 2.333.
   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 0.6.
-  ,1
+  ,36/84
 
   // Uncomment if using tracking wheels
   /*
@@ -154,22 +147,104 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+// Define the drivestick
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+// Define the joystick deadzone
+const int JOYSTICK_DEADZONE = 10;
+
 void opcontrol() {
-  // This is preference to what you like to drive on.
+  // Set the drive brake type
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
 
   while (true) {
+    // Get the joystick values
+    int forward = controller.get_analog(ANALOG_LEFT_Y);
+    int back = controller.get_analog(ANALOG_LEFT_X);
+    int left = controller.get_analog(ANALOG_RIGHT_Y);
+    int right = controller.get_analog(ANALOG_RIGHT_X);
 
-    chassis.tank(); // Tank control
-    // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
-    // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
-    // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
-    // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
+    // Apply the joystick deadzone
+    if (abs(forward) < JOYSTICK_DEADZONE) {
+      forward = 0;
+    }
+    if (abs(back) < JOYSTICK_DEADZONE) {
+      back = 0;
+    }
+    if (abs(left) < JOYSTICK_DEADZONE) {
+      left = 0;
+    }
+    if (abs(right) < JOYSTICK_DEADZONE) {
+      right = 0;
+    }
 
-    // . . .
-    // Put more user control code here!
-    // . . .
+    // Calculate the left and right motor speeds
+    int left_speed = (forward - back + left - right) * 3 / 7;
+    int right_speed = (forward - back - left + right) * 3 / 7;
 
-    pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+    // Set the motor speeds
+    chassis.tank(left_speed, right_speed);
+    
+    // Wait for a short amount of time to prevent the loop from running too fast
+    pros::delay(20);
   }
 }
+
+
+
+// Sample code by copilot
+
+// Define the chassis motors
+// pros::Motor left_chassis_1(4, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+// pros::Motor left_chassis_2(5, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+// pros::Motor left_chassis_3(6, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+// pros::Motor right_chassis_1(1, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+// pros::Motor right_chassis_2(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+// pros::Motor right_chassis_3(3, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+
+// Define the drivestick
+// pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+// Define the chassis
+// pros::Chassis chassis({left_chassis_1, left_chassis_2, left_chassis_3}, {right_chassis_1, right_chassis_2, right_chassis_3});
+
+// Define the joystick deadzone
+// const int JOYSTICK_DEADZONE = 10;
+
+// void opcontrol() {
+//   // Set the drive brake type
+//   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
+
+//   while (true) {
+//     // Get the joystick values
+//     int forward = controller.get_analog(ANALOG_LEFT_Y);
+//     int back = controller.get_analog(ANALOG_LEFT_X);
+//     int left = controller.get_analog(ANALOG_RIGHT_Y);
+//     int right = controller.get_analog(ANALOG_RIGHT_X);
+
+//     // Apply the joystick deadzone
+//     if (abs(forward) < JOYSTICK_DEADZONE) {
+//       forward = 0;
+//     }
+//     if (abs(back) < JOYSTICK_DEADZONE) {
+//       back = 0;
+//     }
+//     if (abs(left) < JOYSTICK_DEADZONE) {
+//       left = 0;
+//     }
+//     if (abs(right) < JOYSTICK_DEADZONE) {
+//       right = 0;
+//     }
+
+//     // Calculate the left and right motor speeds
+//     int left_speed = (forward - back + left - right) * 3 / 7;
+//     int right_speed = (forward - back - left + right) * 3 / 7;
+
+//     // Set the motor speeds
+//     chassis.tank(left_speed, right_speed);
+    
+//     // Wait for a short amount of time to prevent the loop from running too fast
+//     pros::delay(20);
+//   }
+// }
