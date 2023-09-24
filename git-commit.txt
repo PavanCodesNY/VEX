@@ -1,0 +1,5 @@
+git add *
+git commit -m "update"
+git branch -M "branch-name"
+git push origin "branch-name"
+git status
