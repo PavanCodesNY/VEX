@@ -16,6 +16,12 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 using namespace ez;
 
+// Helper functions
+void setDrive(int left, int right);
+
+// Driver Control Functions
+void setDriveMotors();
+
 class Drive {
  public:
   /**

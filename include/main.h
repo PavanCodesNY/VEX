@@ -43,6 +43,11 @@
 //#include "pros/api_legacy.h"
 #include "EZ-Template/api.hpp"
 #include "autons.hpp"
+#include "drive.hpp"
+#include "globals.hpp"
+#include "intake.hpp"
+#include "lift.hpp"
+#include "linear-puncher.hpp"
 
 // More includes here...
 //

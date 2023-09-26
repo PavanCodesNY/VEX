@@ -1,3 +1,6 @@
+#include "main.h"
+#include <functional>
+#include <iostream>
 #pragma once
 
 #include "EZ-Template/drive/drive.hpp"
@@ -17,3 +20,12 @@ void one_mogo_constants();
 void two_mogo_constants();
 void exit_condition_defaults();
 void modified_exit_condition();
+class Auton {
+ public:
+  Auton();
+  Auton(std::string, std::function<void()>);
+  std::string Name;
+  std::function<void()> auton_call;
+
+ private:
+};
